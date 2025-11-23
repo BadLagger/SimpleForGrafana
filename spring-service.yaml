@@ -1,0 +1,11 @@
+appVersion: v1
+kind: Service
+metadata:
+  name: spring-app
+  namespace: monitoring
+spec:
+  selector:
+    app: spring-app
+  ports:
+  - port: 9991
+    targetPort: 9991
