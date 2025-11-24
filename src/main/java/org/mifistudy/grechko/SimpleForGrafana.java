@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @SpringBootApplication
 public class SimpleForGrafana {
@@ -23,6 +26,11 @@ public class SimpleForGrafana {
 
 @RestController
 class TestController {
+
+    private final List<byte[]> memoryHog = new ArrayList<>();
+    private final int blockSize = 1024*1024;
+    private final int peaceSize = 100; // 100 Mb
+
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
     private final Counter requestCounter;
 
@@ -43,8 +51,9 @@ class TestController {
 
     @GetMapping("/metrics-test")
     public String metricsTest() {
-        // Этот эндпоинт будет генерировать метрики
-        log.info("Metrics-test Endpoint request!");
+        memoryHog.add(new byte[blockSize*peaceSize]);
+
+        log.info("Metrics-test Endpoint request! App {} Mb used", memoryHog.size()*peaceSize);
         return "Metrics test endpoint";
     }
 }
