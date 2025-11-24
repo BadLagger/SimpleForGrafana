@@ -1,5 +1,7 @@
 package org.mifistudy.grechko;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,14 +12,18 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 @SpringBootApplication
 public class SimpleForGrafana {
+    private static final Logger log = LoggerFactory.getLogger(SimpleForGrafana.class);
+
     public static void main(String[] args) {
-        System.out.println("Hello SimpleForGrafana!");
+        log.info("Starting SimpleForGrafana!");
         SpringApplication.run(SimpleForGrafana.class, args);
+        log.info("Started SimpleForGrafana ok!");
     }
 }
 
 @RestController
 class TestController {
+    private static final Logger log = LoggerFactory.getLogger(TestController.class);
     private final Counter requestCounter;
 
     public TestController(MeterRegistry registry) {
@@ -25,17 +31,20 @@ class TestController {
                 .description("Total number of requests")
                 .tag("endpoint", "/hello")
                 .register(registry);
+        log.info("Test controller runs!");
     }
 
     @GetMapping("/hello")
     public String hello() {
         requestCounter.increment();
+        log.info("Hello Endpoint request: {}", requestCounter.count());
         return "Hello from Spring Boot!";
     }
 
     @GetMapping("/metrics-test")
     public String metricsTest() {
         // Этот эндпоинт будет генерировать метрики
+        log.info("Metrics-test Endpoint request!");
         return "Metrics test endpoint";
     }
 }
